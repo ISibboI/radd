@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     str::FromStr,
     sync::{
         Arc,
@@ -10,13 +10,15 @@ use std::{
 
 use anyhow::anyhow;
 use crossbeam_channel::RecvTimeoutError;
-use log::{LevelFilter, debug, info};
+use log::{LevelFilter, debug, error, info};
 use paho_mqtt::{Client, ConnectOptionsBuilder, Message, QoS, Receiver};
 use simplelog::{ColorChoice, ConfigBuilder, TermLogger, TerminalMode};
 
-use crate::{config::Config, ruuvi::RuuviMessage};
+use crate::{config::Config, hass_discovery::HassDiscoveryMessages, ruuvi::RuuviMessage};
 
 mod config;
+mod dewpoint;
+mod hass_discovery;
 mod ruuvi;
 
 fn init_signals() -> anyhow::Result<Arc<AtomicBool>> {
@@ -41,15 +43,6 @@ fn init_logging(config: &Config) -> anyhow::Result<()> {
     )
     .map_err(|error| anyhow!("Error initialising logger: {error}"))
 }
-
-/*
-Example RuuviTag birth message
-
-Topic: homeassistant/sensor/E08BAE6FD896-mov/config
-QoS: 0
-
-{"stat_t": "+/+/BTtoMQTT/E08BAE6FD896", "name": "RuuviTag_RAWv2-mov", "uniq_id": "E08BAE6FD896-mov", "val_tpl": "{{ value_json.mov | is_defined }}", "device": {"ids": ["E08BAE6FD896"], "cns": [["mac", "E08BAE6FD896"]], "mf": "Ruuvi", "mdl": "RuuviTag_RAWv2", "name": "RuuviTag-6FD896", "via_device": "TheengsGateway"}}
- */
 
 /// Connect to the MQTT broker specified by the environment variables.
 fn connect(config: &Config, stop_requested: Arc<AtomicBool>) -> anyhow::Result<Client> {
@@ -130,6 +123,19 @@ fn consume_messages(
         if !known_devices.contains(&ruuvi_message.id) {
             info!("Discovered new RuuviTag {ruuvi_message}");
             known_devices.insert(ruuvi_message.id.clone());
+
+            let discovery_messages = HassDiscoveryMessages::new(config, &ruuvi_message);
+            for message in discovery_messages.iter_messages() {
+                let message = message?; // Error is a decorated message already.
+                client.publish(message).map_err(|error| {
+                    anyhow!("Unable to publish hass discovery message: {error}")
+                })?;
+            }
+        }
+
+        let additional_message = ruuvi_message.create_additional_message().to_message()?;
+        if let Err(err) = client.publish(additional_message) {
+            error!("Unable to publish additional message: {err}");
         }
     }
 
