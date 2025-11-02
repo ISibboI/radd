@@ -13,6 +13,9 @@ pub struct HassDiscoveryMessages {
 #[derive(Debug, Serialize, Deserialize)]
 struct HassDiscoveryPayload {
     stat_t: String,
+    dev_cla: String,
+    unit_of_meas: String,
+    state_class: String,
     name: String,
     uniq_id: String,
     val_tpl: String,
@@ -35,7 +38,16 @@ Example RuuviTag birth message
 Topic: homeassistant/sensor/E08BAE6FD896-mov/config
 QoS: 0
 
-{"stat_t": "+/+/BTtoMQTT/E08BAE6FD896", "name": "RuuviTag_RAWv2-mov", "uniq_id": "E08BAE6FD896-mov", "val_tpl": "{{ value_json.mov | is_defined }}", "device": {"ids": ["E08BAE6FD896"], "cns": [["mac", "E08BAE6FD896"]], "mf": "Ruuvi", "mdl": "RuuviTag_RAWv2", "name": "RuuviTag-6FD896", "via_device": "TheengsGateway"}}
+{
+    "stat_t": "+/+/BTtoMQTT/E69FBF983814",
+    "dev_cla": "humidity",
+    "unit_of_meas": "%",
+    "state_class": "measurement",
+    "name": "RuuviTag_RAWv2-hum",
+    "uniq_id": "E69FBF983814-hum",
+    "val_tpl": "{{ value_json.hum | is_defined }}",
+    "device": {"ids": ["E69FBF983814"], "cns": [["mac", "E69FBF983814"]], "mf": "Ruuvi", "mdl": "RuuviTag_RAWv2", "name": "RuuviTag-983814", "via_device": "TheengsGateway"}
+}
  */
 
 /* Sample RuuviTag message
@@ -55,33 +67,38 @@ impl HassDiscoveryMessages {
     }
 
     pub fn iter_messages(&self) -> impl Iterator<Item = anyhow::Result<Message>> {
-        ["dewpoint"].into_iter().map(|measurement| {
-            let payload = HassDiscoveryPayload {
-                stat_t: format!("home/Radd/RuuviTagAdditions/{}", self.device_id),
-                name: format!("{}-{}", self.model_id, measurement),
-                uniq_id: format!("{}-{}", self.device_id, measurement),
-                val_tpl: format!("{{{{ value_json.{} | is_defined }}}}", measurement),
-                device: HassDiscoveryDevice {
-                    ids: vec![self.device_id.clone()],
-                    cns: vec![("mac".to_string(), self.device_id.clone())],
-                    mf: "Ruuvi".to_string(),
-                    mdl: self.model_id.clone(),
-                    name: format!("RuuviTag-{}", &self.device_id[6..]),
-                    via_device: "RuuviTag Additions".to_string(),
-                },
-            };
-            let payload = match serde_json::to_vec(&payload) {
-                Ok(payload) => payload,
-                Err(error) => {
-                    return Err(anyhow!("Unable to format hass discovery message: {error}"));
-                }
-            };
+        [("dewpoint", "°C")]
+            .into_iter()
+            .map(|(measurement, unit_of_measurement)| {
+                let payload = HassDiscoveryPayload {
+                    stat_t: format!("home/Radd/RuuviTagAdditions/{}", self.device_id),
+                    dev_cla: measurement.to_string(),
+                    unit_of_meas: unit_of_measurement.to_string(),
+                    state_class: "measurement".to_string(),
+                    name: format!("{}-{}", self.model_id, measurement),
+                    uniq_id: format!("{}-{}", self.device_id, measurement),
+                    val_tpl: format!("{{{{ value_json.{} | is_defined }}}}", measurement),
+                    device: HassDiscoveryDevice {
+                        ids: vec![self.device_id.clone()],
+                        cns: vec![("mac".to_string(), self.device_id.clone())],
+                        mf: "Ruuvi".to_string(),
+                        mdl: self.model_id.clone(),
+                        name: format!("RuuviTag-{}", &self.device_id[6..]),
+                        via_device: "RuuviTag Additions".to_string(),
+                    },
+                };
+                let payload = match serde_json::to_vec(&payload) {
+                    Ok(payload) => payload,
+                    Err(error) => {
+                        return Err(anyhow!("Unable to format hass discovery message: {error}"));
+                    }
+                };
 
-            Ok(MessageBuilder::new()
-                .topic(format!("{}-{}/config", self.topic_prefix, measurement))
-                .qos(QoS::AtMostOnce)
-                .payload(payload)
-                .finalize())
-        })
+                Ok(MessageBuilder::new()
+                    .topic(format!("{}-{}/config", self.topic_prefix, measurement))
+                    .qos(QoS::AtMostOnce)
+                    .payload(payload)
+                    .finalize())
+            })
     }
 }
