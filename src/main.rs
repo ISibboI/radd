@@ -133,9 +133,12 @@ fn consume_messages(
             }
         }
 
-        let additional_message = ruuvi_message.create_additional_message().to_message()?;
+        let additional_message = ruuvi_message.create_additional_message();
+        debug!("Publishing additional message: {additional_message}");
+        let additional_message = additional_message.to_message()?;
         if let Err(err) = client.publish(additional_message) {
             error!("Unable to publish additional message: {err}");
+            continue;
         }
     }
 

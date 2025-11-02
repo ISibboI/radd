@@ -121,3 +121,13 @@ impl Display for RuuviMessage {
         )
     }
 }
+
+impl Display for RuuviAdditionalMessage {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}: {} ({}; {}) Dewpoint={}°C",
+            self.topic, self.name, self.model_id, self.r#type, self.dewpoint_celsius
+        )
+    }
+}
