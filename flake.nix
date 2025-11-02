@@ -11,7 +11,7 @@
       perSystem = { config, self', pkgs, lib, system, ... }:
         let
           runtimeDeps = with pkgs; [  ];
-          buildDeps = with pkgs; [ pkg-config rustPlatform.bindgenHook cmakex ];
+          buildDeps = with pkgs; [ pkg-config rustPlatform.bindgenHook cmake ];
           devDeps = with pkgs; [  ];
 
           cargoToml = builtins.fromTOML (builtins.readFile ./Cargo.toml);
