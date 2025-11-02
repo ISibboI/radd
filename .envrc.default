@@ -1,0 +1,6 @@
+export LOG_LEVEL="Info"
+export MQTT_BROKER_URL="tcp://<ip>:<port>"
+export MQTT_USERNAME="???"
+export MQTT_PASSWORD="???"
+export MQTT_LISTEN_TOPIC="home/TheengsGateway/BTtoMQTT/#"
+export MQTT_HASS_DISCOVERY_TOPIC="homeassistant/"
