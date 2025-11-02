@@ -95,7 +95,7 @@ impl HassDiscoveryMessages {
                 };
 
                 Ok(MessageBuilder::new()
-                    .topic(format!("{}-{}/config", self.topic_prefix, measurement))
+                    .topic(format!("{}{}/config", self.topic_prefix, measurement))
                     .qos(QoS::AtMostOnce)
                     .payload(payload)
                     .finalize())
