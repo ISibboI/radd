@@ -2,11 +2,14 @@
 name = "radd"
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.91.0"
 
 [dependencies]
 simplelog = "0.12.2"
 log = "0.4.28"
-paho-mqtt = "0.13.3"
+paho-mqtt = { version = "0.13.3", default-features = false, features = [
+    "bundled",
+] }
 crossbeam-channel = "0.5.15"
 anyhow = "1.0.100"
 signal-hook = "0.3.18"
