@@ -80,6 +80,7 @@
           self,
           lib,
           pkgs,
+          system,
           ...
         }:
         let
