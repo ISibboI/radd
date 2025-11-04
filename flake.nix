@@ -91,7 +91,7 @@
           options.services.radd = {
             enable = lib.mkEnableOption "Enable the RuuviTag Additions service.";
 
-            package = mkOption {
+            package = lib.mkOption {
               type = types.package;
               default = self.packages.${system}.radd;
               description = "The radd package to use.";
