@@ -92,7 +92,7 @@
 
             package = lib.mkOption {
               type = types.package;
-              default = self.${system}.packages.radd;
+              default = self.${pkgs.system}.packages.radd;
               description = "The radd package to use.";
             };
 
