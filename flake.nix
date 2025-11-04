@@ -90,6 +90,12 @@
           options.services.radd = {
             enable = lib.mkEnableOption "Enable the RuuviTag Additions service.";
 
+            #package = mkOption {
+            #  type = types.package;
+            #  default = self.packages.${system}.radd;
+            #  description = "The radd package to use.";
+            #};
+
             logLevel = lib.mkOption {
               type = types.str;
               default = "Info";
@@ -140,7 +146,7 @@
                     MQTT_PASSWORD=`cat ${cfg.mqttPasswordFile} | xargs echo` # Remove whitespace before and after password
                     MQTT_LISTEN_TOPIC="${cfg.mqttListenTopic}"
                     MQTT_HASS_DISCOVERY_TOPIC="${cfg.mqttHomeAssistantDiscoveryTopic}"
-                    ${cfg.package}/bin/radd
+                    ${self.packages.${system}.radd}/bin/radd
                   '
                 '';
                 Restart = "on-failure";
