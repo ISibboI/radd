@@ -77,7 +77,7 @@
       flake.nixosModules.default =
         {
           config,
-          self,
+          self',
           lib,
           pkgs,
           ...
@@ -92,7 +92,7 @@
 
             package = lib.mkOption {
               type = types.package;
-              default = self.packages.${pkgs.system}.radd;
+              default = self'.packages.${pkgs.system}.radd;
               description = "The radd package to use.";
             };
 
