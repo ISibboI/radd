@@ -77,7 +77,8 @@
       flake.nixosModules.default =
         {
           config,
-          self',
+          self,
+          self' ? self,
           lib,
           pkgs,
           ...
