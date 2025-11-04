@@ -79,11 +79,11 @@
           config,
           lib,
           pkgs,
-          types,
           ...
         }:
         let
           cfg = config.services.radd;
+          types = lib.types;
         in
         {
           options.services.radd = {
