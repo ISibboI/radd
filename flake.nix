@@ -77,7 +77,7 @@
       flake.nixosModules.default =
         {
           config,
-          self',
+          self,
           lib,
           pkgs,
           ...
@@ -140,7 +140,7 @@
                     MQTT_PASSWORD=`cat ${cfg.mqttPasswordFile} | xargs echo` # Remove whitespace before and after password
                     MQTT_LISTEN_TOPIC="${cfg.mqttListenTopic}"
                     MQTT_HASS_DISCOVERY_TOPIC="${cfg.mqttHomeAssistantDiscoveryTopic}"
-                    ${self'.packages.default}/bin/radd
+                    ${self.packages.default}/bin/radd
                   '
                 '';
                 Restart = "on-failure";
