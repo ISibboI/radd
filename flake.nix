@@ -108,7 +108,7 @@
             };
 
             mqttPasswordFile = lib.mkOption {
-              type = types.path;
+              type = types.str;
               description = "The file containing the password to log into the MQTT broker. Whitespace around the password in the file is removed.";
             };
 
