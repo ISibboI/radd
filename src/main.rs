@@ -62,6 +62,7 @@ fn connect(config: &Config, stop_requested: Arc<AtomicBool>) -> anyhow::Result<C
     client
         .connect(connection_options)
         .map_err(|error| anyhow!("Unable to connect to broker: {error}"))?;
+    info!("Connected to broker at {}", config.broker_url());
     Ok(client)
 }
 
@@ -90,6 +91,7 @@ fn subscribe(
                 config.listen_topic()
             )
         })?;
+    info!("Subscribed to RuuviTag topic {}", config.listen_topic());
     Ok(message_receiver)
 }
 
@@ -158,6 +160,8 @@ fn main() -> anyhow::Result<()> {
         &config,
         Arc::clone(&stop_requested),
     )?;
+
+    info!("Terminating...");
 
     Ok(())
 }
