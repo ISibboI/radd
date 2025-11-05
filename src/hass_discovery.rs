@@ -73,7 +73,7 @@ impl HassDiscoveryMessages {
     }
 
     pub fn iter_messages(&self) -> impl Iterator<Item = anyhow::Result<Message>> {
-        [("dewpoint", "absolute_humidity", "°C")].into_iter().map(
+        [("dewpoint", "temperature", "°C")].into_iter().map(
             |(measurement, device_class, unit_of_measurement)| {
                 let payload = HassDiscoveryPayload {
                     stat_t: format!("home/Radd/RuuviTagAdditions/{}", self.device_id),
