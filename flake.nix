@@ -137,20 +137,19 @@
               wantedBy = [ "multi-user.target" ];
 
               serviceConfig = {
-                ExecStart = ''
-                  "bash -c '
-                    LOG_LEVEL=\"${cfg.logLevel}\"
-                    MQTT_BROKER_URL=\"${cfg.mqttBrokerUrl}\"
-                    MQTT_USERNAME=\"${cfg.mqttUsername}\"
-                    MQTT_PASSWORD=`cat \"${cfg.mqttPasswordFile}\" | xargs echo` # Remove whitespace before and after password
-                    MQTT_LISTEN_TOPIC=\"${cfg.mqttListenTopic}\"
-                    MQTT_HASS_DISCOVERY_TOPIC=\"${cfg.mqttHomeAssistantDiscoveryTopic}\"
-                    ${cfg.package}/bin/radd
-                  '"
-                '';
                 Restart = "on-failure";
                 Type = "exec";
               };
+
+              script = ''
+                LOG_LEVEL="${cfg.logLevel}"
+                MQTT_BROKER_URL="${cfg.mqttBrokerUrl}"
+                MQTT_USERNAME="${cfg.mqttUsername}"
+                MQTT_PASSWORD=`cat "${cfg.mqttPasswordFile}" | xargs echo` # Remove whitespace before and after password
+                MQTT_LISTEN_TOPIC="${cfg.mqttListenTopic}"
+                MQTT_HASS_DISCOVERY_TOPIC="${cfg.mqttHomeAssistantDiscoveryTopic}"
+                ${cfg.package}/bin/radd
+              '';
             };
           };
         };
