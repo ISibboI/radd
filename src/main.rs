@@ -61,7 +61,7 @@ fn connect(config: &Config, stop_requested: Arc<AtomicBool>) -> anyhow::Result<C
         .finalize();
     client
         .connect(connection_options)
-        .map_err(|error| anyhow!("Unable to connect to broker: {error}"))?;
+        .map_err(|error| anyhow!("Unable to connect to broker {:?}: {error}", config.broker_url()))?;
     info!("Connected to broker at {}", config.broker_url());
     Ok(client)
 }
