@@ -142,12 +142,12 @@
               };
 
               script = ''
-                LOG_LEVEL="${cfg.logLevel}"
-                MQTT_BROKER_URL="${cfg.mqttBrokerUrl}"
-                MQTT_USERNAME="${cfg.mqttUsername}"
-                MQTT_PASSWORD=`cat "${cfg.mqttPasswordFile}" | xargs echo` # Remove whitespace before and after password
-                MQTT_LISTEN_TOPIC="${cfg.mqttListenTopic}"
-                MQTT_HASS_DISCOVERY_TOPIC="${cfg.mqttHomeAssistantDiscoveryTopic}"
+                export LOG_LEVEL="${cfg.logLevel}"
+                export MQTT_BROKER_URL="${cfg.mqttBrokerUrl}"
+                export MQTT_USERNAME="${cfg.mqttUsername}"
+                export MQTT_PASSWORD=`cat "${cfg.mqttPasswordFile}" | xargs echo` # Remove whitespace before and after password
+                export MQTT_LISTEN_TOPIC="${cfg.mqttListenTopic}"
+                export MQTT_HASS_DISCOVERY_TOPIC="${cfg.mqttHomeAssistantDiscoveryTopic}"
                 ${cfg.package}/bin/radd
               '';
             };
