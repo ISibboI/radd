@@ -103,7 +103,7 @@
 
             mqttBrokerUrl = lib.mkOption {
               type = types.str;
-              default = "tcp://localhost:1883";
+              default = "tcp://127.0.0.1:1883";
               description = "The url pointing to the MQTT broker, as required by paho-mqtt.";
             };
 
