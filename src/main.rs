@@ -11,7 +11,7 @@ use std::{
 use anyhow::anyhow;
 use crossbeam_channel::RecvTimeoutError;
 use log::{LevelFilter, debug, error, info};
-use paho_mqtt::{Client, ConnectOptionsBuilder, Message, QoS, Receiver};
+use paho_mqtt::{Client, ConnectOptionsBuilder, Message, QoS, SyncReceiver};
 use simplelog::{ColorChoice, ConfigBuilder, TermLogger, TerminalMode};
 
 use crate::{config::Config, hass_discovery::HassDiscoveryMessages, ruuvi::RuuviMessage};
@@ -74,7 +74,7 @@ fn subscribe(
     client: &Client,
     config: &Config,
     stop_requested: Arc<AtomicBool>,
-) -> anyhow::Result<Receiver<Option<Message>>> {
+) -> anyhow::Result<SyncReceiver<Option<Message>>> {
     if stop_requested.load(Ordering::Relaxed) {
         return Err(anyhow!("Received termination signal"));
     }
@@ -100,7 +100,7 @@ fn subscribe(
 
 fn consume_messages(
     client: &Client,
-    message_receiver: &Receiver<Option<Message>>,
+    message_receiver: &SyncReceiver<Option<Message>>,
     config: &Config,
     stop_requested: Arc<AtomicBool>,
 ) -> anyhow::Result<()> {
